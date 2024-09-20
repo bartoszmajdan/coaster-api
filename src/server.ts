@@ -1,18 +1,25 @@
+import dotenv from 'dotenv';
 import express from 'express';
+import logger from './providers/logger.ts';
+
+dotenv.config({
+    path: `.env.${process.env.NODE_ENV || 'development'}`,
+});
+
 const app = express();
 
-const init = async () => {
+const initServer = async () => {
     const port = process.env.PORT || 3000;
 
     try {
         await app.listen(port);
-        console.log(`Server listening on port ${port}`);
+        logger.info(`Server listening on port ${port}`);
     } catch (ex) {
-        console.log(ex);
+        logger.error('Error starting server', ex);
     }
 };
 
-init();
+initServer();
 
-export default init;
+export default initServer;
 export { app };

@@ -1,8 +1,10 @@
 {
     "extends": "@tsconfig/node20/tsconfig.json",
     "compilerOptions": {
-        "outDir": "dist"
+        "outDir": "dist",
+        "noEmit": true,
+        "allowImportingTsExtensions": true
     },
-    "include": ["src"],
-    "exclude": ["node_modules", "src/**/*.spec.ts"]
+    "include": ["src/**/*.ts"],
+    "exclude": ["node_modules"]
 }

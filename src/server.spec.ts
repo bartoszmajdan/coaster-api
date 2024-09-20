@@ -1,48 +1,47 @@
-import server, { app } from './server';
-
+jest.mock('./providers/logger');
+jest.mock('dotenv');
 jest.mock('express', () => {
     return () => ({
-        listen: jest.fn().mockResolvedValue('listening'),
+        listen: jest.fn().mockResolvedValueOnce('mocked'),
     });
 });
 
+import initServer, { app } from './server.ts';
+import logger from './providers/logger.ts';
+
 describe('server', () => {
     beforeEach(() => {
-        (app.listen as jest.Mock).mockResolvedValue('listening');
+        jest.clearAllMocks();
     });
 
-    it('should export app', () => {
+    it('should export express app', () => {
         expect(app).toBeDefined();
     });
 
-    it('should export server', () => {
-        expect(server).toBeDefined();
+    it('should export initServer function', () => {
+        expect(initServer).toBeDefined();
     });
 
     it('should call listen on app', async () => {
-        await server();
+        await initServer();
         expect(app.listen).toHaveBeenCalled();
     });
 
     it('should log the port', async () => {
-        console.log = jest.fn();
-        await server();
-        expect(console.log).toHaveBeenCalledWith('Server listening on port 3000');
+        await initServer();
+        expect(logger.info).toHaveBeenCalledWith('Server listening on port 3000');
     });
 
     it('should log the error', async () => {
-        console.log = jest.fn();
+        (app.listen as jest.Mock).mockRejectedValueOnce(new Error('Mock error'));
 
-        (app.listen as jest.Mock).mockRejectedValue(new Error('Mock error'));
-
-        await server();
-        expect(console.log).toHaveBeenCalledWith(new Error('Mock error'));
+        await initServer();
+        expect(logger.error).toHaveBeenCalledWith('Error starting server', new Error('Mock error'));
     });
 
     it('should listen on the port from the environment', async () => {
         process.env.PORT = '3001';
-        console.log = jest.fn();
-        await server();
-        expect(console.log).toHaveBeenCalledWith('Server listening on port 3001');
+        await initServer();
+        expect(logger.info).toHaveBeenCalledWith('Server listening on port 3001');
     });
 });
