@@ -10,7 +10,7 @@
 ## Setup
 
 ```bash
-git clone
+git clone git@github.com:bartoszmajdan/coaster-api.git
 cd coaster-api
 ```
 
