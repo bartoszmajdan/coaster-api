@@ -2,6 +2,7 @@ import Coaster from '../models/Coaster';
 import leadingZero from '../utils/leadingZero';
 import { loadModelList } from './database';
 import logger from './logger';
+import { checkIsMaster } from './master';
 
 class CoasterManager {
     coasters: Coaster[] = [];
@@ -33,6 +34,11 @@ class CoasterManager {
 
     async start() {
         setInterval(async () => {
+            const isMaster = checkIsMaster();
+            if (!isMaster) {
+                return;
+            }
+
             await this.loadCoasters();
             const messages: string[] = [];
             this.coasters.forEach((coaster) => {

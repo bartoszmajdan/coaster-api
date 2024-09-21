@@ -1,8 +1,11 @@
 import { Request, Response } from 'express';
 import { ReasonPhrases, StatusCodes } from 'http-status-codes';
 
+import { MESSAGE_TYPES } from '../../constants/messages';
+
 import Coaster from '../../models/Coaster';
 import { loadModel } from '../../providers/database';
+import { publishMessage } from '../../providers/synchronizer';
 
 const deleteCoasterWagonHandler = async (req: Request, res: Response) => {
     const modelData = await loadModel('Coaster', req.params.coasterId);
@@ -13,6 +16,10 @@ const deleteCoasterWagonHandler = async (req: Request, res: Response) => {
     const coaster = new Coaster(modelData.data as Coaster);
     const saveResult = await coaster.deleteWagon(req.params.wagonId);
     if (saveResult) {
+        await publishMessage({
+            data: coaster,
+            action: MESSAGE_TYPES.UPDATE_COASTER,
+        });
         return res.status(StatusCodes.OK).send(ReasonPhrases.OK);
     }
 

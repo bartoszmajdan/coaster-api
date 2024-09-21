@@ -8,14 +8,23 @@ dotenv.config({
 import logger from './providers/logger';
 import expressSetup from './providers/express';
 import CoasterManager from './providers/coaster';
+import acquireMasterLock from './providers/master';
+import initSynchronizer from './providers/synchronizer';
 
-(() => {
+(async () => {
     const application = expressSetup();
     const port = process.env.PORT || 3000;
     const coasterManager = new CoasterManager();
 
-    application.listen(port, () => {
-        coasterManager.start();
-        logger.info(`Server listening on port ${port}`);
-    });
+    try {
+        await initSynchronizer();
+        await acquireMasterLock();
+        await coasterManager.start();
+
+        application.listen(port, () => {
+            logger.info(`Server listening on port ${port}`);
+        });
+    } catch (ex) {
+        logger.error(ex);
+    }
 })();
