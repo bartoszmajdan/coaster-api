@@ -1,4 +1,4 @@
-const checkHoursAndMinutes = (value: string) => {
+const checkHoursAndMinutes = (value: string): boolean => {
     const [hour, minute] = value.split(':').map(Number);
 
     if (isNaN(hour) || isNaN(minute)) {

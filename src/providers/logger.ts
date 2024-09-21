@@ -1,8 +1,11 @@
 import winston from 'winston';
 import { join } from 'path';
+import { isProduction } from '../utils/getEnvioroment';
+
+const logsDir = join(__dirname, '../../', 'logs');
 
 const logger = winston.createLogger({
-    level: process.env.LOG_LEVEL || 'info',
+    level: 'info',
     format: winston.format.combine(
         winston.format.timestamp(),
         winston.format.printf(
@@ -11,19 +14,24 @@ const logger = winston.createLogger({
     ),
     transports: [
         new winston.transports.File({
-            filename: join(__dirname, '../', 'logs', 'error.log'),
+            filename: join(logsDir, 'error.log'),
             level: 'error',
         }),
         new winston.transports.File({
-            filename: join(__dirname, '../', 'logs', 'warn.log'),
+            filename: join(logsDir, 'warn.log'),
             level: 'warn',
-        }),
-        new winston.transports.File({
-            filename: join(__dirname, '../', 'logs', 'info.log'),
-            level: 'info',
         }),
         new winston.transports.Console(),
     ],
 });
+
+if (!isProduction()) {
+    logger.add(
+        new winston.transports.File({
+            filename: join(logsDir, 'info.log'),
+            level: 'info',
+        }),
+    );
+}
 
 export default logger;

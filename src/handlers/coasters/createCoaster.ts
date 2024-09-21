@@ -12,6 +12,7 @@ const createCoasterHandler = async (req: Request, res: Response) => {
         routeLength: req.body.routeLength,
         openingHour: req.body.openingHour,
         closingHour: req.body.closingHour,
+        wagons: [],
     });
 
     const saveResult = await coaster.save();

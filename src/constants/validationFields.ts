@@ -7,13 +7,13 @@ export default {
     staffCount: body('staffCount')
         .isNumeric()
         .custom((value) => isPositiveNumber(value))
-        .withMessage('Staff count must be a positive number (including zero)'),
+        .withMessage('Staff count must be a positive number'),
     clientsCount: body('clientsCount')
         .custom((value) => isPositiveNumber(value))
-        .withMessage('Clients count must be a positive number (including zero)'),
+        .withMessage('Clients count must be a positive number'),
     routeLength: body('routeLength')
         .custom((value) => isPositiveNumber(value))
-        .withMessage('Route length must be a positive number (including zero)'),
+        .withMessage('Route length must be a positive number'),
     openingHour: body('openingHour')
         .isString()
         .withMessage('Opening hour must be a string')
@@ -26,10 +26,10 @@ export default {
         .withMessage('Closing hour must be a string')
         .custom((value) => checkHoursAndMinutes(value))
         .withMessage('Closing hour must be between 00:00 and 23:59'),
-    seatCount: body('seatCount')
+    seatsCount: body('seatsCount')
         .custom((value) => isPositiveNumber(value))
-        .withMessage('Seat count must be a positive number (including zero)'),
+        .withMessage('Seats count must be a positive number'),
     wagonSpeed: body('wagonSpeed')
         .custom((value) => isPositiveNumber(value))
-        .withMessage('Wagon speed must be a positive number (including zero)'),
+        .withMessage('Wagon speed must be a positive number'),
 };

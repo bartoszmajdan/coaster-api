@@ -4,7 +4,7 @@ import { ReasonPhrases, StatusCodes } from 'http-status-codes';
 
 import Wagon from '../../models/Wagon';
 import Coaster from '../../models/Coaster';
-import { loadModel } from '../../providers/fileDatabase';
+import { loadModel } from '../../providers/database';
 
 const createCoasterWagonHandler = async (req: Request, res: Response) => {
     const modelData = await loadModel('Coaster', req.params.coasterId);
@@ -21,7 +21,7 @@ const createCoasterWagonHandler = async (req: Request, res: Response) => {
 
     const saveResult = await coaster.addWagon(wagon);
     if (saveResult) {
-        return res.status(StatusCodes.OK).send({
+        return res.status(StatusCodes.CREATED).send({
             id: wagon.id,
         });
     }

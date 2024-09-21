@@ -2,10 +2,12 @@ import fs from 'fs';
 import { join } from 'path';
 
 import logger from './logger';
-import prepareFolder from '../utils/prepareFolder';
 
 import Wagon from '../models/Wagon';
 import Coaster from '../models/Coaster';
+
+import prepareFolder from '../utils/prepareFolder';
+import getEnvioroment from '../utils/getEnvioroment';
 
 interface ISerialize {
     id: string;
@@ -13,13 +15,12 @@ interface ISerialize {
     data: Wagon | Coaster;
 }
 
-const loadModel = async (model: string, id: string): Promise<ISerialize | null> => {
-    const folderPath = join(BASE_PATH, model);
+const loadModel = async (modelName: string, id: string): Promise<ISerialize | null> => {
+    const folderPath = join(BASE_PATH, modelName);
     const filePath = getFilePath(folderPath, id);
 
     let fileContent = null;
     try {
-        await fs.promises.access(filePath);
         fileContent = await fs.promises.readFile(filePath, ENCODING);
     } catch (error) {
         logger.error(`Error accessing file ${filePath}`, error);
@@ -39,9 +40,33 @@ const loadModel = async (model: string, id: string): Promise<ISerialize | null> 
 
     return {
         id,
-        model,
+        model: modelName,
         data: fileContent,
     };
+};
+
+const loadModelList = async (modelName: string): Promise<ISerialize[]> => {
+    const folderPath = join(BASE_PATH, modelName);
+
+    let files: string[] = [];
+    try {
+        await prepareFolder(folderPath);
+        files = await fs.promises.readdir(folderPath);
+    } catch (error) {
+        logger.error(`Error reading folder ${folderPath}`, error);
+        return [];
+    }
+
+    const models: ISerialize[] = [];
+    for (const file of files) {
+        const id = file.replace('.json', '');
+        const model = await loadModel(modelName, id);
+        if (model !== null) {
+            models.push(model);
+        }
+    }
+
+    return models;
 };
 
 abstract class FileDatabase {
@@ -54,7 +79,6 @@ abstract class FileDatabase {
 
         try {
             await prepareFolder(folderPath);
-            await fs.promises.access(folderPath);
             await fs.promises.writeFile(filePath, JSON.stringify(data), ENCODING);
             return true;
         } catch (error) {
@@ -66,8 +90,8 @@ abstract class FileDatabase {
 }
 
 const ENCODING = 'utf-8' as BufferEncoding;
-const BASE_PATH = join(__dirname, '../', 'database');
+const BASE_PATH = join(__dirname, '../../', 'database', getEnvioroment());
 const getFilePath = (folder: string, id: string): string => join(folder, `${id}.json`);
 
-export { loadModel };
+export { loadModel, loadModelList };
 export default FileDatabase;

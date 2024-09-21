@@ -1,4 +1,4 @@
-const checkOpeningAndClosingHours = (openingValue: string, closingValue: string) => {
+const checkOpeningAndClosingHours = (openingValue: string, closingValue: string): boolean => {
     const [openingHour, openingMinute] = openingValue.split(':').map(Number);
     const [closingHour, closingMinute] = closingValue.split(':').map(Number);
 

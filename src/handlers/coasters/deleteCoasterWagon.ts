@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { ReasonPhrases, StatusCodes } from 'http-status-codes';
 
 import Coaster from '../../models/Coaster';
-import { loadModel } from '../../providers/fileDatabase';
+import { loadModel } from '../../providers/database';
 
 const deleteCoasterWagonHandler = async (req: Request, res: Response) => {
     const modelData = await loadModel('Coaster', req.params.coasterId);

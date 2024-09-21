@@ -35,7 +35,7 @@ router.put(
 
 router.post(
     '/:coasterId/wagons',
-    validationMiddleware([validationFields.seatCount, validationFields.wagonSpeed]),
+    validationMiddleware([validationFields.seatsCount, validationFields.wagonSpeed]),
     createCoasterWagonHandler,
 );
 
